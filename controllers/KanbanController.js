@@ -15,7 +15,8 @@ class KanbanController {
 
     static add(req, res, next) {
         let userId = req.currentUserId
-        let { title, description, tag } = req.body
+        let tag = ''
+        let { title, description } = req.body
         let newdata = {
             title,
             description,
@@ -38,10 +39,8 @@ class KanbanController {
     }
     static update(req, res, next) {
         let id = +req.params.id
-        let { title, description, tag } = req.body
+        let { tag } = req.body
         let updatedData = {
-            title,
-            description,
             tag
         }
 
@@ -67,7 +66,7 @@ class KanbanController {
     }
 
     static delete(req, res, next) {
-        let id = re.params.id
+        let id = req.params.id
         Kanban.destroy({ where: { id: id } })
             .then((result) => {
                 return res.status(201).json({ msg: 'Success Delete' })

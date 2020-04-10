@@ -10,7 +10,14 @@ module.exports = (sequelize, DataTypes) => {
         description: DataTypes.STRING,
         tag: DataTypes.STRING,
         userId: DataTypes.INTEGER
-    }, { sequelize });
+    }, {
+        hooks: {
+            beforeCreate: (Kanban, options) => {
+                Kanban.tag = 'new entry'
+            }
+        },
+        sequelize
+    });
 
     Kanban.associate = function(models) {
         Kanban.belongsTo(models.User, { foreignKey: 'userId' })

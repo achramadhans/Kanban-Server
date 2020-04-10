@@ -1,31 +1,34 @@
 const { verifyToken } = require('../helpers/jwt')
 const { User } = require('../models')
 
-const authentication = (req, res, next) => {
-    const decoded = verifyToken(req.headers.access_token)
+function authentication(req, res, next) {
     try {
-        User.findOne({ where: { id: decoded.id } })
+        let decoded = verifyToken(req.headers.access_token)
+        console.log(decoded);
+        let { id } = decoded
+        User.findByPk(id)
             .then(result => {
                 if (result) {
+                    // console.log(result);
                     req.currentUserId = result.id
                     return next()
                 } else {
-                    return res.status(404).json({
+                    return next({
                         name: "NotFound",
-                        errors: [{ message: "User not found" }]
+                        errors: [{ msg: 'User Not Found' }]
                     })
                 }
             })
             .catch(err => {
-                return res.status(401).json({
+                return next({
                     name: "Unauthorized",
-                    errors: [{ message: "User un authenticated" }]
+                    errors: [{ msg: 'Unauthorized' }]
                 })
             })
     } catch (err) {
-        return res.status(500).json({
-            name: "Internal Server",
-            errors: [{ message: "Error" }]
+        return next({
+            name: "InternalServerError",
+            errors: [{ msg: err }]
         })
     }
 }

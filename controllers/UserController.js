@@ -12,17 +12,16 @@ class UserController {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 })
-                .then((data) => {
+                .then(data => {
                     console.log(data)
                     let payload = { id: data.id, email: data.email }
                     let access_token = generateToken(payload)
+                    console.log(access_token);
                     return res.status(200).json({
-                        id: data.id,
-                        email: data.email,
-                        access_token
+                        'access_token': access_token
                     })
                 })
-                .catch((err) => {
+                .catch(err => {
                     return next(err)
                 })
         } else return next({
@@ -34,22 +33,20 @@ class UserController {
     static login(req, res, next) {
         let { email, password } = req.body
         User.findOne({ where: { email: email } })
-            .then((data) => {
+            .then(data => {
                 if (data) {
                     let decrypted = compare(password, data.password)
                     if (decrypted) {
                         let payload = { id: data.id, email: data.email }
                         let access_token = generateToken(payload)
                         return res.status(200).json({
-                            id: data.id,
-                            email: data.email,
-                            access_token
+                            'access_token': access_token
                         })
                     } else return next({ name: 'BadRequest', msg: 'Wrong email/password' })
 
                 } else return next({ name: 'BadRequest', msg: 'Wrong email/password' })
             })
-            .catch((err) => {
+            .catch(err => {
                 return next({ name: 'NotFound', msg: 'User Not found' })
             })
     }
